@@ -1,0 +1,90 @@
+
+# Sequence
+
+RoomSelection.onJoinButton_	@	roomselection.js:137
+ - RoomSelection.loadRoom_	@	roomselection.js:150
+   - (anonymous)	@	appcontroller.js:183
+     - AppController.finishCallSetup_	@	appcontroller.js:207
+       - Call.start	@	call.js:58
+         - Call.connectToRoom_	@	call.js:248
+           - Call.joinRoom_	@	call.js:449  <- Where we need to replace POST request with pre-generated data
+             - (anonymous)	@	call.js:456
+               - sendAsyncUrlRequest	@	util.js:39
+                 - sendUrlRequest	@	util.js:46
+                   - (anonymous)	@	util.js:68
+                     - (anonymous)	@	VM43:1  <- 1st POST Request to room with no data
+                     
+         
+# Needed response:      
+{
+  "params": {
+    "offer_options": "{}", 
+    "client_id": "95540478", 
+    "wss_url": "wss://apprtc-ws.webrtc.org:443/ws", 
+    "ice_server_transports": "", 
+    "room_link": "https://3.239.163.54:8081/r/647157006", 
+    "wss_post_url": "https://apprtc-ws.webrtc.org:443", 
+    "room_id": "647157006", 
+    "header_message": "", 
+    "is_initiator": "true", 
+    "ice_server_url": "https://appr.tc/v1alpha/iceconfig?key=", 
+    "warning_messages": [], 
+    "is_loopback": "false", 
+    "messages": [], 
+    "error_messages": [], 
+    "pc_config": "{\"rtcpMuxPolicy\": \"require\", \"iceServers\": [], \"bundlePolicy\": \"max-bundle\"}", 
+    "bypass_join_confirmation": "false", 
+    "pc_constraints": "{\"optional\": []}", 
+    "version_info": "{\"gitHash\": \"78600dbe205774c115cf481a091387d928c99d6a\", \"time\": \"Wed Sep 23 12:49:00 2020 +0200\", \"branch\": \"master\"}",
+    "media_constraints": "{\"audio\": true, \"video\": true}", 
+    "include_loopback_js": ""
+  }, 
+  "result": "SUCCESS"
+}
+
+
+# Pre-generated data for 1st request
+
+client_id <- user-input or randomly generate
+room_id   <- user-input or randomly generate
+wss_url   <- "" (do not use elsewhere)
+wss_post_url <- "" (do not user elsewhere)
+room_link  <- must have ability to create file on remote directory
+pc_config  <- config used to establish peer connection
+ice_server_url = ?
+version_info = ?
+is_initiator = true (for caller) / false (for joiner)
+is_loopback = false
+bypass_join_confirmation = false
+media_constraints = "{\"audio\": false, \"video\": false}"  (for testing)
+
+# Client-generated response for creating room
+var client_id = getClientId();
+var room_id = getRoomId();
+var room_link = createRoomLink(room_id);
+var pc_config = initPcConfig();
+{
+  "params": {
+    "offer_options": "{}", 
+    "client_id": client_id, 
+    "room_id": room_id, 
+    "wss_url": "", 
+    "wss_post_url": "", 
+    "room_link": room_link,
+    "pc_config": pc_config, 
+    "pc_constraints": "{\"optional\": []}", 
+    "version_info": null,
+    "ice_server_transports": "",  
+    "ice_server_url": "https://appr.tc/v1alpha/iceconfig?key=", 
+    "header_message": "", 
+    "is_initiator": "true", 
+    "messages": [], 
+    "warning_messages": [], 
+    "error_messages": [], 
+    "is_loopback": "false", 
+    "bypass_join_confirmation": "false", 
+    "media_constraints": "{\"audio\": false, \"video\": false}", 
+    "include_loopback_js": ""
+  }, 
+  "result": "SUCCESS"
+}

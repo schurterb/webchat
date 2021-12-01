@@ -1,0 +1,19 @@
+# 2021-04-23
+
+[partial PASS] Test local video and audio with SSL
+[FAIL] Test Viagenie TURN server with SSL to bypass NAT
+[] Test Viagenie TURN server with SSL to bypass certain VPN configs
+
+# 2021-05-07
+
+CloudFront url:  https://dcbgwf5uvz6yb.cloudfront.net
+
+# 2021-05-12
+
+New url:  https://test.securewebchat.net	
+
+# 2021-05-13
+
+DataChannel ping working between linux-box behind VPN and windows-box on AWS.
+ - Run coturn as background process - mostly default config
+ - unlock UDP and TCP ports

@@ -1,0 +1,16 @@
+# Handling connections between multiple peers
+
+* Each peer-to-peer connection must be established independently
+  - Thus, for 3 peers, there will be 2 connections on each peer to the other 2.
+  
+## Serverless Signaling Channel
+
+Each 'file' is json object of the following form:
+{
+    "start_time": "",    // This field is used for determing who initiates a connection.  Older peers always initiate.
+    "peer1_id": [ ... ], // The signaling messages to peer1
+    "peer2_id": [ ... ], // The signaling messages to peer2
+    ...                  // For all peers
+}
+
+

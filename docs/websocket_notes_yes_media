@@ -1,0 +1,183 @@
+# Notes on the function of the websocket in apprtc
+
+###################################
+# user 1: user 1 initiating room
+
+POST /join/159219455
+request:
+none
+response: 
+{
+  "params": {
+    "offer_options": "{}", 
+    "client_id": "94200009", 
+    "wss_url": "wss://apprtc-ws.webrtc.org:443/ws", 
+    "ice_server_transports": "", 
+    "room_link": "https://3.239.163.54:8081/r/159219455", 
+    "wss_post_url": "https://apprtc-ws.webrtc.org:443", 
+    "room_id": "159219455", 
+    "header_message": "", 
+    "is_initiator": "true", 
+    "ice_server_url": "https://appr.tc/v1alpha/iceconfig?key=", 
+    "warning_messages": [], 
+    "is_loopback": "false", 
+    "messages": [], 
+    "error_messages": [], 
+    "pc_config": "{\"rtcpMuxPolicy\": \"require\", \"iceServers\": [], \"bundlePolicy\": \"max-bundle\"}", 
+    "bypass_join_confirmation": "false", 
+    "pc_constraints": "{\"optional\": []}", 
+    "version_info": "{\"gitHash\": \"78600dbe205774c115cf481a091387d928c99d6a\", \"time\": \"Wed Sep 23 12:49:00 2020 +0200\", \"branch\": \"master\"}", 
+    "media_constraints": "{\"audio\": true, \"video\": true}", 
+    "include_loopback_js": ""
+  }, 
+  "result": "SUCCESS"
+}
+
+
+POST /message/159219455/94200009
+request:
+{
+  "sdp":"v=0\r\no=mozilla...THIS_IS_SDPARTA-84.0.2 8332888037662313147 0 IN IP4 0.0.0.0\r\ns=-\r\nt=0 0\r\na=fingerprint:sha-256 B1:20:41:AE:23:7D:FE:B1:7C:1E:70:17:59:F4:99:60:BA:EA:63:90:F4:D3:4B:8A:6C:6F:F5:93:1C:44:2D:3F\r\na=group:BUNDLE 0 1\r\na=ice-options:trickle\r\na=msid-semantic:WMS *\r\nm=audio 9 UDP/TLS/RTP/SAVPF 109 9 0 8 101\r\nc=IN IP4 0.0.0.0\r\na=sendrecv\r\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\na=extmap:2/recvonly urn:ietf:params:rtp-hdrext:csrc-audio-level\r\na=extmap:3 urn:ietf:params:rtp-hdrext:sdes:mid\r\na=fmtp:109 maxplaybackrate=48000;stereo=1;useinbandfec=1\r\na=fmtp:101 0-15\r\na=ice-pwd:a48a7cc95f9dfd999a029c3edd07fecb\r\na=ice-ufrag:fbc1f379\r\na=mid:0\r\na=msid:{c7d5b79b-1457-394c-a750-89ead6fe060f} {de2540c7-9ac3-9c41-affa-74ec76073f1d}\r\na=rtcp-mux\r\na=rtpmap:109 opus/48000/2\r\na=rtpmap:9 G722/8000/1\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:101 telephone-event/8000/1\r\na=setup:actpass\r\na=ssrc:2352399717 cname:{82bfaaaf-7ba8-e146-8ec0-828a817bafdb}\r\nm=video 0 UDP/TLS/RTP/SAVPF 121 120 124 125 126 127 97 98\r\nc=IN IP4 0.0.0.0\r\na=bundle-only\r\na=sendrecv\r\na=extmap:3 urn:ietf:params:rtp-hdrext:sdes:mid\r\na=extmap:4 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\na=extmap:5 urn:ietf:params:rtp-hdrext:toffset\r\na=extmap:6/recvonly http://www.webrtc.org/experiments/rtp-hdrext/playout-delay\r\na=extmap:7 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r\na=fmtp:126 profile-level-id=42e01f;level-asymmetry-allowed=1;packetization-mode=1\r\na=fmtp:97 profile-level-id=42e01f;level-asymmetry-allowed=1\r\na=fmtp:120 max-fs=12288;max-fr=60\r\na=fmtp:124 apt=120\r\na=fmtp:121 max-fs=12288;max-fr=60\r\na=fmtp:125 apt=121\r\na=fmtp:127 apt=126\r\na=fmtp:98 apt=97\r\na=ice-pwd:a48a7cc95f9dfd999a029c3edd07fecb\r\na=ice-ufrag:fbc1f379\r\na=mid:1\r\na=msid:{c7d5b79b-1457-394c-a750-89ead6fe060f} {8be16187-e27f-c843-8f72-6ac2adf45da4}\r\na=rtcp-fb:120 nack\r\na=rtcp-fb:120 nack pli\r\na=rtcp-fb:120 ccm fir\r\na=rtcp-fb:120 goog-remb\r\na=rtcp-fb:120 transport-cc\r\na=rtcp-fb:121 nack\r\na=rtcp-fb:121 nack pli\r\na=rtcp-fb:121 ccm fir\r\na=rtcp-fb:121 goog-remb\r\na=rtcp-fb:121 transport-cc\r\na=rtcp-fb:126 nack\r\na=rtcp-fb:126 nack pli\r\na=rtcp-fb:126 ccm fir\r\na=rtcp-fb:126 goog-remb\r\na=rtcp-fb:126 transport-cc\r\na=rtcp-fb:97 nack\r\na=rtcp-fb:97 nack pli\r\na=rtcp-fb:97 ccm fir\r\na=rtcp-fb:97 goog-remb\r\na=rtcp-fb:97 transport-cc\r\na=rtcp-mux\r\na=rtcp-rsize\r\na=rtpmap:120 VP8/90000\r\na=rtpmap:124 rtx/90000\r\na=rtpmap:121 VP9/90000\r\na=rtpmap:125 rtx/90000\r\na=rtpmap:126 H264/90000\r\na=rtpmap:127 rtx/90000\r\na=rtpmap:97 H264/90000\r\na=rtpmap:98 rtx/90000\r\na=setup:actpass\r\na=ssrc:496991668 cname:{82bfaaaf-7ba8-e146-8ec0-828a817bafdb}\r\na=ssrc:2075881076 cname:{82bfaaaf-7ba8-e146-8ec0-828a817bafdb}\r\na=ssrc-group:FID 496991668 2075881076\r\n" ,
+  "type":"offer"
+}
+response: 
+{"result": "SUCCESS"}
+
+
+POST /message/159219455/94200009
+request:
+{
+  "type":"candidate",
+  "label":0,
+  "id":"0",
+  "candidate":"candidate:0 1 UDP 2122252543 192.168.56.3 58792 typ host"
+}
+response: 
+{"result": "SUCCESS"}
+
+
+POST /message/159219455/94200009
+request:
+{
+  "type":"candidate",
+  "label":0,
+  "id":"0",
+  "candidate":"candidate:1 1 UDP 2122187007 10.8.0.6 54612 typ host"
+}
+response: 
+{"result": "SUCCESS"}
+
+
+POST /message/159219455/94200009
+request:
+{
+  "type":"candidate",
+  "label":0,
+  "id":"0",
+  "candidate":"candidate:0 2 UDP 2122252542 192.168.56.3 59088 typ host"
+}
+response: 
+{"result": "SUCCESS"}
+
+
+POST /message/159219455/94200009
+request:
+{
+  "type":"candidate",
+  "label":0,
+  "id":"0",
+  "candidate":"candidate:1 2 UDP 2122187006 10.8.0.6 56769 typ host"
+}
+response: 
+{"result": "SUCCESS"}
+
+
+POST /message/159219455/94200009
+request:
+{
+  "type":"candidate",
+  "label":0,
+  "id":"0",
+  "candidate":""
+}
+response: 
+{"result": "SUCCESS"}
+
+###################################
+
+###################################
+# user 1: user 2 joining room
+
+
+###################################
+
+
+###################################
+# user 2: user 2 joining room
+
+POST /join/159219455
+request:
+none
+response: 
+{ 
+  "params": {
+    "offer_options": "{}", 
+    "client_id": "94367755", 
+    "wss_url": "wss://apprtc-ws.webrtc.org:443/ws", 
+    "ice_server_transports": "", 
+    "room_link": "https://3.239.163.54:8081/r/159219455", 
+    "wss_post_url": "https://apprtc-ws.webrtc.org:443", 
+    "room_id": "159219455", 
+    "header_message": "", 
+    "is_initiator": "false", 
+    "ice_server_url": "https://appr.tc/v1alpha/iceconfig?key=", 
+    "warning_messages": [], 
+    "is_loopback": "false", 
+    "messages": [
+      "{\"sdp\":\"v=0\\r\\no=mozilla...THIS_IS_SDPARTA-84.0.2 8332888037662313147 0 IN IP4 0.0.0.0\\r\\ns=-\\r\\nt=0 0\\r\\na=fingerprint:sha-256 B1:20:41:AE:23:7D:FE:B1:7C:1E:70:17:59:F4:99:60:BA:EA:63:90:F4:D3:4B:8A:6C:6F:F5:93:1C:44:2D:3F\\r\\na=group:BUNDLE 0 1\\r\\na=ice-options:trickle\\r\\na=msid-semantic:WMS *\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 109 9 0 8 101\\r\\nc=IN IP4 0.0.0.0\\r\\na=sendrecv\\r\\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\\r\\na=extmap:2/recvonly urn:ietf:params:rtp-hdrext:csrc-audio-level\\r\\na=extmap:3 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=fmtp:109 maxplaybackrate=48000;stereo=1;useinbandfec=1\\r\\na=fmtp:101 0-15\\r\\na=ice-pwd:a48a7cc95f9dfd999a029c3edd07fecb\\r\\na=ice-ufrag:fbc1f379\\r\\na=mid:0\\r\\na=msid:{c7d5b79b-1457-394c-a750-89ead6fe060f} {de2540c7-9ac3-9c41-affa-74ec76073f1d}\\r\\na=rtcp-mux\\r\\na=rtpmap:109 opus/48000/2\\r\\na=rtpmap:9 G722/8000/1\\r\\na=rtpmap:0 PCMU/8000\\r\\na=rtpmap:8 PCMA/8000\\r\\na=rtpmap:101 telephone-event/8000/1\\r\\na=setup:actpass\\r\\na=ssrc:2352399717 cname:{82bfaaaf-7ba8-e146-8ec0-828a817bafdb}\\r\\nm=video 0 UDP/TLS/RTP/SAVPF 121 120 124 125 126 127 97 98\\r\\nc=IN IP4 0.0.0.0\\r\\na=bundle-only\\r\\na=sendrecv\\r\\na=extmap:3 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=extmap:4 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\\r\\na=extmap:5 urn:ietf:params:rtp-hdrext:toffset\\r\\na=extmap:6/recvonly http://www.webrtc.org/experiments/rtp-hdrext/playout-delay\\r\\na=extmap:7 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\\r\\na=fmtp:126 profile-level-id=42e01f;level-asymmetry-allowed=1;packetization-mode=1\\r\\na=fmtp:97 profile-level-id=42e01f;level-asymmetry-allowed=1\\r\\na=fmtp:120 max-fs=12288;max-fr=60\\r\\na=fmtp:124 apt=120\\r\\na=fmtp:121 max-fs=12288;max-fr=60\\r\\na=fmtp:125 apt=121\\r\\na=fmtp:127 apt=126\\r\\na=fmtp:98 apt=97\\r\\na=ice-pwd:a48a7cc95f9dfd999a029c3edd07fecb\\r\\na=ice-ufrag:fbc1f379\\r\\na=mid:1\\r\\na=msid:{c7d5b79b-1457-394c-a750-89ead6fe060f} {8be16187-e27f-c843-8f72-6ac2adf45da4}\\r\\na=rtcp-fb:120 nack\\r\\na=rtcp-fb:120 nack pli\\r\\na=rtcp-fb:120 ccm fir\\r\\na=rtcp-fb:120 goog-remb\\r\\na=rtcp-fb:120 transport-cc\\r\\na=rtcp-fb:121 nack\\r\\na=rtcp-fb:121 nack pli\\r\\na=rtcp-fb:121 ccm fir\\r\\na=rtcp-fb:121 goog-remb\\r\\na=rtcp-fb:121 transport-cc\\r\\na=rtcp-fb:126 nack\\r\\na=rtcp-fb:126 nack pli\\r\\na=rtcp-fb:126 ccm fir\\r\\na=rtcp-fb:126 goog-remb\\r\\na=rtcp-fb:126 transport-cc\\r\\na=rtcp-fb:97 nack\\r\\na=rtcp-fb:97 nack pli\\r\\na=rtcp-fb:97 ccm fir\\r\\na=rtcp-fb:97 goog-remb\\r\\na=rtcp-fb:97 transport-cc\\r\\na=rtcp-mux\\r\\na=rtcp-rsize\\r\\na=rtpmap:120 VP8/90000\\r\\na=rtpmap:124 rtx/90000\\r\\na=rtpmap:121 VP9/90000\\r\\na=rtpmap:125 rtx/90000\\r\\na=rtpmap:126 H264/90000\\r\\na=rtpmap:127 rtx/90000\\r\\na=rtpmap:97 H264/90000\\r\\na=rtpmap:98 rtx/90000\\r\\na=setup:actpass\\r\\na=ssrc:496991668 cname:{82bfaaaf-7ba8-e146-8ec0-828a817bafdb}\\r\\na=ssrc:2075881076 cname:{82bfaaaf-7ba8-e146-8ec0-828a817bafdb}\\r\\na=ssrc-group:FID 496991668 2075881076\\r\\n\",\"type\":\"offer\"}",
+      "{\"type\":\"candidate\",\"label\":0,\"id\":\"0\",\"candidate\":\"candidate:0 1 UDP 2122252543 192.168.56.3 58792 typ host\"}", 
+      "{\"type\":\"candidate\",\"label\":0,\"id\":\"0\",\"candidate\":\"\"}", 
+      "{\"type\":\"candidate\",\"label\":0,\"id\":\"0\",\"candidate\":\"candidate:1 1 UDP 2122187007 10.8.0.6 54612 typ host\"}", 
+      "{\"type\":\"candidate\",\"label\":0,\"id\":\"0\",\"candidate\":\"candidate:1 2 UDP 2122187006 10.8.0.6 56769 typ host\"}", 
+      "{\"type\":\"candidate\",\"label\":0,\"id\":\"0\",\"candidate\":\"candidate:0 2 UDP 2122252542 192.168.56.3 59088 typ host\"}"
+    ], 
+    "error_messages": [], 
+    "pc_config": "{\"rtcpMuxPolicy\": \"require\", \"iceServers\": [], \"bundlePolicy\": \"max-bundle\"}", 
+    "bypass_join_confirmation": "false", 
+    "pc_constraints": "{\"optional\": []}", 
+    "version_info": "{\"gitHash\": \"78600dbe205774c115cf481a091387d928c99d6a\", \"time\": \"Wed Sep 23 12:49:00 2020 +0200\", \"branch\": \"master\"}", 
+    "media_constraints": "{\"audio\": true, \"video\": true}",
+    "include_loopback_js": ""
+  }, 
+  "result": "SUCCESS"
+}
+
+###################################
+
+###################################
+# websockets:
+
+When joinging the room, each user starts the websocket connection by sending something like:
+{"cmd":"register","roomid":"159219455","clientid":"94200009"}
+
+When joinging the room, user 2 sends the following data to the server via websocket.
+which is then sent from the server via websocket to user 1:
+{
+  "msg": "{\"sdp\":\"v=0\\r\\no=mozilla...THIS_IS_SDPARTA-84.0.2 650750520425939133 0 IN IP4 0.0.0.0\\r\\ns=-\\r\\nt=0 0\\r\\na=fingerprint:sha-256 70:FD:D0:ED:BD:4D:54:B5:C2:DC:1B:B3:CA:2A:03:7A:41:5C:AE:CD:A9:B8:E4:C2:AB:2E:87:23:20:E7:ED:30\\r\\na=group:BUNDLE 0 1\\r\\na=ice-options:trickle\\r\\na=msid-semantic:WMS *\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 109 9 0 8 101\\r\\nc=IN IP4 0.0.0.0\\r\\na=sendrecv\\r\\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\\r\\na=extmap:3 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=fmtp:109 maxplaybackrate=48000;stereo=1;useinbandfec=1\\r\\na=fmtp:101 0-15\\r\\na=ice-pwd:12d686a3e48ee16f4656554f19df7697\\r\\na=ice-ufrag:4288dbdc\\r\\na=mid:0\\r\\na=msid:{c72f90a5-a1bc-f54c-97dc-2c23996842ad} {d8368207-88b2-b64f-aaeb-7a02a4ba3ec0}\\r\\na=rtcp-mux\\r\\na=rtpmap:109 opus/48000/2\\r\\na=rtpmap:9 G722/8000/1\\r\\na=rtpmap:0 PCMU/8000\\r\\na=rtpmap:8 PCMA/8000\\r\\na=rtpmap:101 telephone-event/8000/1\\r\\na=setup:active\\r\\na=ssrc:3301119589 cname:{905017eb-6016-7c46-910e-856043cc5ac3}\\r\\nm=video 9 UDP/TLS/RTP/SAVPF 121 125 120 124 126 127 97 98\\r\\nc=IN IP4 0.0.0.0\\r\\na=sendrecv\\r\\na=extmap:3 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=extmap:4 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\\r\\na=extmap:5 urn:ietf:params:rtp-hdrext:toffset\\r\\na=extmap:7 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\\r\\na=fmtp:126 profile-level-id=42e01f;level-asymmetry-allowed=1;packetization-mode=1\\r\\na=fmtp:97 profile-level-id=42e01f;level-asymmetry-allowed=1\\r\\na=fmtp:121 max-fs=12288;max-fr=60\\r\\na=fmtp:125 apt=121\\r\\na=fmtp:120 max-fs=12288;max-fr=60\\r\\na=fmtp:124 apt=120\\r\\na=fmtp:127 apt=126\\r\\na=fmtp:98 apt=97\\r\\na=ice-pwd:12d686a3e48ee16f4656554f19df7697\\r\\na=ice-ufrag:4288dbdc\\r\\na=mid:1\\r\\na=msid:{c72f90a5-a1bc-f54c-97dc-2c23996842ad} {70f057c3-ed5f-3540-836f-d18ec88fa4c1}\\r\\na=rtcp-fb:121 nack\\r\\na=rtcp-fb:121 nack pli\\r\\na=rtcp-fb:121 ccm fir\\r\\na=rtcp-fb:121 goog-remb\\r\\na=rtcp-fb:121 transport-cc\\r\\na=rtcp-fb:120 nack\\r\\na=rtcp-fb:120 nack pli\\r\\na=rtcp-fb:120 ccm fir\\r\\na=rtcp-fb:120 goog-remb\\r\\na=rtcp-fb:120 transport-cc\\r\\na=rtcp-fb:126 nack\\r\\na=rtcp-fb:126 nack pli\\r\\na=rtcp-fb:126 ccm fir\\r\\na=rtcp-fb:126 goog-remb\\r\\na=rtcp-fb:126 transport-cc\\r\\na=rtcp-fb:97 nack\\r\\na=rtcp-fb:97 nack pli\\r\\na=rtcp-fb:97 ccm fir\\r\\na=rtcp-fb:97 goog-remb\\r\\na=rtcp-fb:97 transport-cc\\r\\na=rtcp-mux\\r\\na=rtcp-rsize\\r\\na=rtpmap:121 VP9/90000\\r\\na=rtpmap:125 rtx/90000\\r\\na=rtpmap:120 VP8/90000\\r\\na=rtpmap:124 rtx/90000\\r\\na=rtpmap:126 H264/90000\\r\\na=rtpmap:127 rtx/90000\\r\\na=rtpmap:97 H264/90000\\r\\na=rtpmap:98 rtx/90000\\r\\na=setup:active\\r\\na=ssrc:2720057832 cname:{905017eb-6016-7c46-910e-856043cc5ac3}\\r\\na=ssrc:2903336825 cname:{905017eb-6016-7c46-910e-856043cc5ac3}\\r\\na=ssrc-group:FID 2720057832 2903336825\\r\\n\",\"type\":\"answer\"}",
+  "error":""
+}
+{
+  "msg": "{\"type\":\"candidate\",\"label\":0,\"id\":\"0\",\"candidate\":\"candidate:0 1 UDP 2122252543 192.168.56.3 57678 typ host\"}",
+  "error":""
+}
+{
+  "msg": "{\"type\":\"candidate\",\"label\":0,\"id\":\"0\",\"candidate\":\"candidate:1 1 UDP 2122187007 10.8.0.6 60849 typ host\"}",
+  "error":""
+}
+{ 
+  "msg": "{\"type\":\"candidate\",\"label\":0,\"id\":\"0\",\"candidate\":\"\"}",
+  "error":""
+}
+
+
+###################################

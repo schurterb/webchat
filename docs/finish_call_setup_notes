@@ -1,0 +1,21 @@
+
+# Sequence
+
+RoomSelection.onJoinButton_	@	roomselection.js:137
+ - RoomSelection.loadRoom_	@	roomselection.js:150
+   - (anonymous)	@	appcontroller.js:183
+     - AppController.finishCallSetup_	@	appcontroller.js:207
+       - Call.start	@	call.js:58
+         - Call.connectToRoom_	@	call.js:266
+           - Promise.then (async)	
+             - (anonymous)	@	call.js:274
+               - Promise.then (async)	
+                 - (anonymous)	@	call.js:275
+                   - Call.startSignaling_	@	call.js:430
+                     - Promise.then (async)	
+                       - (anonymous)	@	call.js:436
+                         - PeerConnectionClient.startAsCaller	@	peerconnectionclient.js:102
+                           - Promise.then (async)	
+                             - PeerConnectionClient.setLocalSdpAndNotify_	@	peerconnectionclient.js:227
+                               - Call.sendSignalingMessage_	@	call.js:530
+                               

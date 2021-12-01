@@ -1,0 +1,24 @@
+
+# References
+https://aws.amazon.com/sdk-for-javascript/
+https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-started-browser.html
+https://docs.aws.amazon.com/sdk-for-javascript/index.html
+https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_variables.html
+
+# Cognito
+User Pool   : testapp
+Auth Role   : Cognito_testappAuth_Role
+Unauth Role : Cognito_testappUnauth_Role
+
+# Initialize JS App
+// Initialize the Amazon Cognito credentials provider with unauthenticated user
+AWS.config.region = 'us-east-1'; // Region
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: 'us-east-1:af776b5f-8a1c-4b16-b843-bdd854cf7257',
+});
+
+// Initialize the Amazon Cognito credentials provider with authenticated user
+AWS.config.region = 'us-east-1'; // Region
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: 'us-east-1:af776b5f-8a1c-4b16-b843-bdd854cf7257',
+});

@@ -1,0 +1,13 @@
+
+Peer Connection needs to obfuscate the async interactions with the RTCPeerConnection 
+just like the webchat-serverless-channel does for the Signaling Channel
+
+ - Queue up and process Signalling messages - check?
+ - Queue up and send DataChannel messages
+ - Handler for received messages
+
+ 
+Negotiator logic:
+ - Manage multiple Peer Connections
+ - Handle & sort messages from Signaling Channel to Peers
+ - Configure Peer Connections
