@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Stop the nodejs app
+sudo kill -9 $(cat log/app.pid)
+
+# Stop nginx
+sudo nginx -s stop

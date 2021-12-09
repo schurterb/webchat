@@ -1,0 +1,16 @@
+# www-static
+
+nginx - sudo apt install nginx
+
+
+# sig-server
+
+pip3 install flask flask-socketio
+
+
+# turn-server
+
+sudo apt-get install coturn
+# https://fatiherikci.com/en/how-to-install-turn-coturn/
+# https://github.com/coturn/coturn/blob/master/INSTALL
+

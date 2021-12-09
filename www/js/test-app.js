@@ -1,7 +1,8 @@
 
 /* globals setUpFullScreen, isFullScreen, Login, $, 
            webchatServerless, UI_CONSTANTS, WebRTCPinger,
-           WebchatServerlessChannel, WebchatService */
+           WebchatServerlessChannel, WebchatService,
+           SignalServerConnector, WebchatSignalChannel */
 
 /* exported TestApp */
 
@@ -18,10 +19,11 @@ var TestApp = function(loadingParams) {
   this.muteAudioIconSet_ = new TestApp.IconSet_(UI_CONSTANTS.muteAudioSvg);
   this.muteVideoIconSet_ = new TestApp.IconSet_(UI_CONSTANTS.muteVideoSvg);
   this.fullscreenIconSet_ = new TestApp.IconSet_(UI_CONSTANTS.fullscreenSvg);
-
+  
   this.loadingParams_ = loadingParams;
   
-  this.wcService = new WebchatService(loadingParams, new WebchatServerlessChannel());
+  this.channel_ = new WebchatSignalChannel();
+  this.wcService = new WebchatService(loadingParams, this.channel_);
   
   this.wcService.onError_ = this.displayError_.bind(this);
   this.wcService.onRemoteHangup_ = this.onRemoteHangup_.bind(this);
@@ -39,7 +41,7 @@ var TestApp = function(loadingParams) {
 
 TestApp.prototype.showLogin_ = function() {
   var roomSelectionDiv = $(UI_CONSTANTS.roomSelectionDiv);
-  this.roomSelection_ = new Login(roomSelectionDiv);
+  this.roomSelection_ = new Login(roomSelectionDiv, this.channel_.connection);
   this.show_(roomSelectionDiv);
 };
 

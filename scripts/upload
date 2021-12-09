@@ -1,0 +1,16 @@
+#!/bin/bash
+
+host_bucket="web-dev-20210201"
+
+cd www
+html_files=$(ls *html)
+for file in $html_files
+do
+    aws s3 cp $file s3://$host_bucket/$file
+done
+aws s3 cp favicon.ico s3://$host_bucket/favicon.ico --metadata '{"Content-Type":"image"}' 
+aws s3 cp index.js s3://$host_bucket/www/index.js --metadata '{"Content-Type":"text/javascript"}' 
+aws s3 cp js s3://$host_bucket/www/js --metadata '{"Content-Type":"text/javascript"}' --recursive 
+aws s3 cp css s3://$host_bucket/www/css --metadata '{"Content-Type":"text/css"}' --recursive 
+aws s3 cp images s3://$host_bucket/www/images --metadata '{"Content-Type":"image"}' --recursive 
+cd ..

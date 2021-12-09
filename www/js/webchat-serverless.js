@@ -1,9 +1,7 @@
 let webchatServerless = {
-  
+    
     aws: AWS,
     
-    id_pool_id: 'us-east-1:af776b5f-8a1c-4b16-b843-bdd854cf7257',
-    user_pool_id: 'us-east-1_Ez8dIP9Xb',
     client_id: '4c79vdrft3cdt70eh5po9ukeas',
     room_id: null,
     room_password: null,

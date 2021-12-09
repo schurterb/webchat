@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Reload nginx
+sudo nginx
+sudo cp nginx/nginx.conf /etc/nginx/nginx.conf
+sudo nginx -s reload
+
+# Start the nodejs server
+node src/js/server.js &> log/app.log &
+echo $! &> log/app.pid
+

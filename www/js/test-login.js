@@ -1,12 +1,13 @@
 
-/* globals webchatTools, webchatServerless, UI_CONSTANTS, $ */
+/* globals webchatTools, SignalServerConnector, UI_CONSTANTS, $ */
 
 /* exported Login */
 
 'use strict';
 
-var Login = function(roomSelectionDiv) {
+var Login = function(roomSelectionDiv, connection) {
   this.roomSelectionDiv_ = roomSelectionDiv;
+  this.connection_ = connection;
   
   this.roomIdInput_ = this.roomSelectionDiv_.querySelector(UI_CONSTANTS.roomSelectionInput);
   this.roomIdInputLabel_ = this.roomSelectionDiv_.querySelector(UI_CONSTANTS.roomSelectionInputLabel);
@@ -87,23 +88,16 @@ Login.prototype.onJoinButton_ = function() {
 };
 
 Login.prototype.loadRoom_ = function(roomName, roomPassword) {
-  webchatServerless.joinRoom(roomName, roomPassword);
+  this.connection_.joinRoom(roomName, roomPassword);
   
   webchat.hide_($(UI_CONSTANTS.roomSelectionDiv));
   webchat.show_($(UI_CONSTANTS.joiningRoomDiv));
-  var interval_id = setInterval(function() {
-    if (webchatServerless.is_logged_in) {
-      webchat.hide_($(UI_CONSTANTS.joiningRoomDiv));
-      webchat.wcService.start(roomName, roomPassword);
-      
-      webchat.roomSelection_.cleanupEventListeners();
-      webchat.roomSelection_ = null;
-      if (webchat.localStream_) {
-        webchat.attachLocalStream_();
-      }
-      
-      clearInterval(interval_id);
-      console.log("Room selected!");
-    }
-  }, 1000);
+  webchat.wcService.start(roomName, roomPassword);
+  
+  webchat.roomSelection_.cleanupEventListeners();
+  webchat.roomSelection_ = null;
+  if (webchat.localStream_) {
+    webchat.attachLocalStream_();
+  }
+  webchat.hide_($(UI_CONSTANTS.joiningRoomDiv));
 };

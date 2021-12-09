@@ -1,5 +1,5 @@
 
-/* globals PeerConnection, RoomSelection, $, webchatServerless,
+/* globals PeerConnection, RoomSelection, $, SignalServerConnector,
            queryStringToDictionary, Negotiator, UI_CONSTANTS */
 
 /* exported WebchatService */
