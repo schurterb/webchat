@@ -5,9 +5,9 @@
 
 'use strict';
 
-var Login = function(roomSelectionDiv, connection) {
+var Login = function(roomSelectionDiv, app) {
   this.roomSelectionDiv_ = roomSelectionDiv;
-  this.connection_ = connection;
+  this.app_ = app;
   
   this.roomIdInput_ = this.roomSelectionDiv_.querySelector(UI_CONSTANTS.roomSelectionInput);
   this.roomIdInputLabel_ = this.roomSelectionDiv_.querySelector(UI_CONSTANTS.roomSelectionInputLabel);
@@ -88,16 +88,17 @@ Login.prototype.onJoinButton_ = function() {
 };
 
 Login.prototype.loadRoom_ = function(roomName, roomPassword) {
-  this.connection_.joinRoom(roomName, roomPassword);
+  this.app_.channel_.connection.joinRoom(roomName, roomPassword);
   
-  webchat.hide_($(UI_CONSTANTS.roomSelectionDiv));
-  webchat.show_($(UI_CONSTANTS.joiningRoomDiv));
-  webchat.wcService.start(roomName, roomPassword);
+  this.app_.hide_($(UI_CONSTANTS.roomSelectionDiv));
+  this.app_.show_($(UI_CONSTANTS.joiningRoomDiv));
+  console.log("Starting webchat service");
+  this.app_.wcService.start(roomName, roomPassword);
   
-  webchat.roomSelection_.cleanupEventListeners();
-  webchat.roomSelection_ = null;
-  if (webchat.localStream_) {
-    webchat.attachLocalStream_();
+  this.app_.roomSelection_.cleanupEventListeners();
+  this.app_.roomSelection_ = null;
+  if (this.app_.localStream_) {
+    this.app_.attachLocalStream_();
   }
-  webchat.hide_($(UI_CONSTANTS.joiningRoomDiv));
+  this.app_.hide_($(UI_CONSTANTS.joiningRoomDiv));
 };

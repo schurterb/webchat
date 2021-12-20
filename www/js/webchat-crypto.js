@@ -4,8 +4,9 @@
 
 'use strict';
 
-var Crypto = function(key) {
+var Crypto = function(key, log_level=0) {
     this.cipherkey=key;
+    this.log_level=log_level;
 }
 
 Crypto.prototype.encrypt = function(plaintext) {

@@ -1,18 +1,23 @@
 
-/* globals navigator, WebchatServerlessChannel, PeerConnection, 
-   webchatTools, RTCPeerConnection, webchatServerless */
+/* globals navigator, PeerConnection, 
+   webchatTools, RTCPeerConnection */
 
 /* exported Negotiator */
 
 'use strict';
 
-var Negotiator = function(params, channel) {
+var Negotiator = function(params, channel, log_level=3) {
   this.params_ = params;
   this.channel_ = channel;
+  this.log_level = log_level;
+  
   this.peers_ = {};
   this.peerLocks_ = {};
   this.started_ = false;
   this.startTime_ = null;
+  
+  this.connection_attempts_ = {};
+  this.max_retries = 5;
   
   this.onnewconnection = null;
   this.ondatachannelmessage = null;
@@ -32,6 +37,7 @@ Negotiator.prototype.start = function(roomId, roomKey) {
   this.startTime_ = Date.now();
   this.params_.roomId = roomId;
   this.params_.roomKey = roomKey;
+  
   this.channel_.onmessage = this.onRecvSignalingChannelMessage_.bind(this);
   
   // Asynchronously initialize everything
@@ -44,7 +50,7 @@ Negotiator.prototype.start = function(roomId, roomKey) {
     
     this.params_.clientId = roomParams.client_id;
     this.params_.roomId = roomParams.room_id;
-    this.params_.roomKey = webchatServerless.room_password;
+    // this.params_.roomKey = webchatServerless.room_password;
     this.params_.roomLink = roomParams.room_link;
     this.params_.isInitiator = roomParams.is_initiator === 'true';
 
@@ -54,6 +60,7 @@ Negotiator.prototype.start = function(roomId, roomKey) {
     return Promise.reject(error);
   }.bind(this));
   
+  if(this.log_level >= 2) { console.log("[negotiator]: Initializing..."); }
   // 1) Open channel and 2) join room
   Promise.all([channelPromise, joinPromise]).then(function() {
     
@@ -66,8 +73,6 @@ Negotiator.prototype.start = function(roomId, roomKey) {
         // 6) Initialize Certificates
         Promise.all([this.maybeInitializeCertificates()]).then(function(){
         
-          // 7) Finally, start signalling.
-          this.startSignaling_();
           this.started_ = true;
         }.bind(this));
       }.bind(this)).catch(function(error) {
@@ -94,14 +99,8 @@ Negotiator.prototype.joinRoom_ = function() {
     //TODO: Create the room, too!
     var pc_config = webchatTools.initPcConfig();
     
-    var fileList = await webchatServerless.listFiles();
     var is_initiator = "true";
     var messages = [];
-    if(fileList.length > 0) {
-      is_initiator = "false";
-      messages = await webchatServerless.getFile(fileList[0]);
-      messages = JSON.parse(messages.Body);
-    }
     
     var responseObj = {
       "params": {
@@ -118,7 +117,7 @@ Negotiator.prototype.joinRoom_ = function() {
         "media_constraints": "{\"audio\": false, \"video\": false}", 
       }, 
       "result": "SUCCESS"
-    }
+    };
     resolve(responseObj.params);
     
   }.bind(this));
@@ -153,8 +152,10 @@ Negotiator.prototype.maybeGetMedia_ = function() {
               });
         })
         .then(function(stream) {
-          console.log('Got access to local media with mediaConstraints:\n' +
-          '  \'' + JSON.stringify(mediaConstraints) + '\'');
+          if(this.log_level >= 2) {
+            console.log('[negotiator]: Got access to local media with mediaConstraints:\n' +
+                        '  \'' + JSON.stringify(mediaConstraints) + '\'');
+          }
 
           this.onUserMediaSuccess_(stream);
         }.bind(this)).catch(function(error) {
@@ -181,11 +182,11 @@ Negotiator.prototype.maybeInitializeCertificates = function() {
       var certParams = {name: 'ECDSA', namedCurve: 'P-256'};
       RTCPeerConnection.generateCertificate(certParams)
           .then(function(cert) {
-            console.log('ECDSA certificate generated successfully.');
+            if(this.log_level >= 2) { console.log('[negotiator]: ECDSA certificate generated successfully.'); }
             this.params_.peerConnectionConfig.certificates = [cert];
           }.bind(this))
           .catch(function(error) {
-            console.log('ECDSA certificate generation failed.');
+            if(this.log_level >= 2) { console.log('[negotiator]: ECDSA certificate generation failed.'); }
             reject(error);
           });
     }
@@ -193,25 +194,39 @@ Negotiator.prototype.maybeInitializeCertificates = function() {
   }.bind(this));
 };
 
-Negotiator.prototype.startSignaling_ = function() {
-};
-
 Negotiator.prototype.onRecvSignalingChannelMessage_ = function(msg) {
-  this.getPeerConnection(msg.peer, msg.start_time).receiveSignalingMessage(msg.data);
+  if (msg.type == 'new_peer') {
+    //Start connection with this new peer
+    this.getPeerConnection(msg.peer_id, null, true);
+  } else {
+    this.getPeerConnection(msg.contents.client_id, msg.contents.start_time, false).receiveSignalingMessage(msg.contents.message);
+  }
 };
 
-Negotiator.prototype.getPeerConnection = function( peer, startTime ) {
-  console.log("Getting connection to peer : "+peer);
+Negotiator.prototype.listPeers = function() {
+  return Object.keys(this.peers_);
+}
+
+Negotiator.prototype.getPeerConnection = function( peer, startTime = null, initiate_anyway = false ) {
   if(Object.keys(this.peers_).indexOf(peer) < 0) {
-    //In the case of the first peer connection we receive, we should rename it to match the remote client.
-    this.peers_[peer] = this.createPeerConnection_(peer);
-    this.onnewconnection({peerId: peer, peerConnection: this.peers_[peer]})
     
-    if ((startTime != null) && (this.startTime_ > startTime)) {
+    this.peers_[peer] = this.createPeerConnection_(peer);
+    
+    if ( initiate_anyway || ((startTime != null) && (this.startTime_ > startTime)) ) {
       this.peers_[peer].startConnection(this.params_.offerOptions);
     } else {
-      this.peers_[peer].joinConnection(this.params_.messages);
+      this.peers_[peer].joinConnection(this.params_.messages); //What is up with this.params_.messages ??
     }
+    
+    //Initialize the connection attempt entry
+    if( !Object.keys(this.connection_attempts_).includes(peer) )
+    { this.connection_attempts_[peer] = 1; }
+    
+    //Notify others of new connection
+    if(this.onnewconnection) {
+      this.onnewconnection({peerId: peer, peerConnection: this.peers_[peer]});
+    }
+    
   }
   return this.peers_[peer];
 }
@@ -228,15 +243,39 @@ Negotiator.prototype.createPeerConnection_ = function(peerId) {
   pcClient.onremotesdpset = this.onremotesdpset;
   pcClient.onremotestreamadded = this.onremotestreamadded;
   pcClient.onsignalingstatechange = this.onsignalingstatechange;
-  pcClient.oniceconnectionstatechange = this.oniceconnectionstatechange;
+  pcClient.oniceconnectionstatechange = function( event ) {
+    
+    if(this.log_level >= 2) { console.log("[negotiator]: Received ICE connection state change event :: ",event); }
+    if( (event.iceConnectionState == 'disconnected') || (event.iceConnectionState == 'failed')) {
+      var was_initiator = false;
+      if( Object.keys(this.peers_).includes(event.peerId) ) {
+        if(this.log_level >= 2) { console.log("[negotiator]: Removing disconnected or failed connection to ",event.peerId); }
+        was_initiator = this.peers_[event.peerId].isInitiator_;
+        delete this.peers_[event.peerId];
+      }
+      if( was_initiator && (event.iceConnectionState == 'failed') ) {
+        if (this.connection_attempts_[event.peerId] < this.max_retries) {
+          if(this.log_level >= 2) { console.log("[negotiator]: Retrying connection to ",event.peerId," :: Attempt",this.connection_attempts_[event.peerId]); }
+          this.connection_attempts_[event.peerId] += 1;
+          this.onRecvSignalingChannelMessage_({type: "new_peer", peer_id: event.peerId});
+        } else {
+          delete this.connection_attempts_[event.peerId];
+        }
+      }
+    }
+    
+    //Forward ice connection event
+    if( this.oniceconnectionstatechange ) { this.oniceconnectionstatechange(event); }
+  }.bind(this);
   pcClient.onnewicecandidate = this.onnewicecandidate;
   pcClient.onerror = this.onerror;
   return pcClient;
 };
 
-Negotiator.prototype.sendSignalingMessage_ = async function(message, peerId) {
+Negotiator.prototype.sendSignalingMessage_ = function(message, peerId) {
   var msgString = JSON.stringify(message);
-  await this.channel_.send(msgString, peerId);
+  // console.log("[negotiator] msg for signaling server: "+msgString);
+  this.channel_.send(msgString, peerId);
 };
 
 Negotiator.prototype.onError_ = function(message) {
@@ -247,4 +286,11 @@ Negotiator.prototype.onError_ = function(message) {
 
 Negotiator.prototype.listPeerIds = function() {
   return Object.getKeys(this.peers_);
+}
+
+Negotiator.prototype.onUserMediaSuccess_ = function() {
+  if(this.log_level >= 2) { console.log("[negotiator] onUserMediaSuccess_"); }
+}
+Negotiator.prototype.onUserMediaError_ = function() {
+  if(this.log_level >= 2) { console.log("[negotiator] onUserMediaError_"); }
 }

@@ -11,13 +11,17 @@
 
 'use strict';
 
-var PeerConnection = function(id, params) {
+var PeerConnection = function(id, params, log_level=0) {
   this.peerId = id;
   this.params_ = params;
-  console.log(" **** "+JSON.stringify(this.params_));
+  this.log_level=log_level;
+  
+  if(this.log_level >= 2) {
+    console.log("[pc]: "+JSON.stringify(this.params_));
+  }
   this.startTime_ = Date.now();
 
-  this.cryptoClient_ = new Crypto(this.params_.roomKey);
+  this.cryptoClient_ = null; //new Crypto(this.params_.roomKey);
   this.createAndConfigureRTCPeerConnection();
   
   this.dataChannel_ = null;
@@ -66,7 +70,9 @@ PeerConnection.prototype.startConnection = function(offerOptions) {
   this.createDataChannel("Channel1");
   
   var constraints = mergeConstraints(PeerConnection.DEFAULT_SDP_OFFER_OPTIONS_, offerOptions);
-  console.log('Sending offer to peer, with constraints: \n\''+JSON.stringify(constraints)+'\'.');
+  if(this.log_level >= 2) {
+    console.log('[pc]: Sending offer to peer, with constraints: \n\''+JSON.stringify(constraints)+'\'.');
+  }
   this.pc_.createOffer(constraints)
       .then(this.setLocalSdpAndNotify_.bind(this))
       .catch(this.onError_.bind(this, 'createOffer'));
@@ -100,7 +106,9 @@ PeerConnection.prototype.receiveSignalingMessage = function(message) {
   if(message.length > 0) {
     var messageObj = parseJSON(message);
     if (!messageObj) {
-      console.log("Failed to parse json='"+message+"'");
+      if(this.log_level >= 1) {
+        console.log("[pc][error]: Failed to parse json='"+message+"'");
+      }
       return;
     }
     if ((this.isInitiator_ && messageObj.type === 'answer') ||
@@ -138,14 +146,18 @@ PeerConnection.prototype.receiveSignalingMessage = function(message) {
 PeerConnection.prototype.processSignalingMessage_ = function(message) {
   if (message.type === 'offer' && !this.isInitiator_) {
     if (this.pc_.signalingState !== 'stable') {
-      console.log('ERROR: remote offer received in unexpected state: ' +  this.pc_.signalingState);
+      if(this.log_level >= 1) {
+        console.log('[pc][error]: remote offer received in unexpected state: ' +  this.pc_.signalingState);
+      }
       return;
     }
     this.setRemoteSdp_(message);
     this.createAnswer_();
   } else if (message.type === 'answer' && this.isInitiator_) {
     if (this.pc_.signalingState !== 'have-local-offer') {
-      console.log('ERROR: remote answer received in unexpected state: ' + this.pc_.signalingState);
+      if(this.log_level >= 1) {
+        console.log('[pc][error]: remote answer received in unexpected state: ' + this.pc_.signalingState);
+      }
       return;
     }
     this.setRemoteSdp_(message);
@@ -156,10 +168,16 @@ PeerConnection.prototype.processSignalingMessage_ = function(message) {
     });
     this.recordIceCandidate_('Remote', candidate);
     this.pc_.addIceCandidate(candidate)
-        .then(console.log.bind(null, 'Remote candidate added successfully.'))
+        .then( function () {
+          if(this.log_level >= 2) {
+            console.log('[pc]: Remote candidate added successfully.')
+          }
+        })
         .catch(this.onError_.bind(this, 'addIceCandidate'));
   } else {
-    console.log('WARNING: unexpected message: ' + JSON.stringify(message));
+    if(this.log_level >= 1) {
+      console.log('[pc][warn]: unexpected message: ' + JSON.stringify(message));
+    }
   }
 };
 
@@ -181,7 +199,9 @@ PeerConnection.prototype.getPeerConnectionStats = function(callback) {
 };
 
 PeerConnection.prototype.createAnswer_ = function() {
-  console.log('Sending answer to peer.');
+  if(this.log_level >= 2) {
+    console.log('[pc]: Sending answer to peer.');
+  }
   this.pc_.createAnswer()
       .then(this.setLocalSdpAndNotify_.bind(this))
       .catch(this.onError_.bind(this, 'createAnswer'));
@@ -197,7 +217,11 @@ PeerConnection.prototype.setLocalSdpAndNotify_ = function(sessionDescription)
   sessionDescription.sdp = maybeRemoveVideoFec(sessionDescription.sdp, this.params_);
   
   this.pc_.setLocalDescription(sessionDescription)
-      .then(console.log.bind(null, 'Set session description success.'))
+      .then( function() {
+        if(this.log_level >= 2) {
+          console.log('[pc]: Set session description success.');
+        }
+      })
       .catch(this.onError_.bind(this, 'setLocalDescription'));
 
   if (this.onsignalingmessage) {
@@ -224,7 +248,9 @@ PeerConnection.prototype.setRemoteSdp_ = function(message) {
 };
 
 PeerConnection.prototype.onSetRemoteDescriptionSuccess_ = function() {
-  console.log('Set remote session description success. Checking for remote streams.');
+  if(this.log_level >= 2) {
+    console.log('[pc]: Set remote session description success. Checking for remote streams.');
+  }
   var remoteStreams = this.pc_.getReceivers(); // getRemoteStreams is deprecated
   if (this.onremotesdpset) {
     this.onremotesdpset(remoteStreams.length > 0 && remoteStreams[0].getVideoTracks().length > 0);
@@ -240,19 +266,27 @@ PeerConnection.prototype.addStream = function(stream) {
 };
 
 PeerConnection.prototype.onError_ = function(tag, error) {
-  console.log(tag+': '+error.toString());
+  if(this.log_level >= 1) {
+    console.log('['+tag+'][error]: '+error.toString());
+  }
 };
 
 PeerConnection.prototype.createAndConfigureRTCPeerConnection = function() {
-  console.log('Creating RTCPeerConnnection with:\n' +
-    '  config: \'' + JSON.stringify(this.params_.peerConnectionConfig) + '\';\n' +
-    '  constraints: \'' + JSON.stringify(this.params_.peerConnectionConstraints) +
-    '\'.');
+  if(this.log_level >= 2) {
+    console.log('[pc]: Creating RTCPeerConnnection with:\n' +
+                '  config: \'' + JSON.stringify(this.params_.peerConnectionConfig) + '\';\n' +
+                '  constraints: \'' + JSON.stringify(this.params_.peerConnectionConstraints) +
+                '\'.');
+  }
 
   this.pc_ = new RTCPeerConnection(this.params_.peerConnectionConfig, this.params_.peerConnectionConstraints);
   
   // Change this to possibly terminate PeerConnection
-  this.pc_.onremovestream = console.log.bind(null, 'Remote stream removed.');
+  this.pc_.onremovestream = function() {
+    if(this.log_level >= 2) {
+      console.log('[pc]: Remote stream removed.');
+    }
+  }
   
   // Add various event handlers
   this.pc_.onicecandidate = function(event) {
@@ -272,7 +306,9 @@ PeerConnection.prototype.createAndConfigureRTCPeerConnection = function() {
         this.recordIceCandidate_('Local', event.candidate);
       }
     } else {
-      console.log('End of candidates.');
+      if(this.log_level >= 2) {
+        console.log('[pc]: End of candidates.');
+      }
     }
   }.bind(this);
   this.pc_.ontrack = function(event) {
@@ -280,15 +316,21 @@ PeerConnection.prototype.createAndConfigureRTCPeerConnection = function() {
   }.bind(this);
   this.pc_.onsignalingstatechange = function() {
     if (this.pc_) {
-      console.log('Signaling state changed to: ' + this.pc_.signalingState);
+      if(this.log_level >= 2) {
+        console.log('[pc]: Signaling state changed to: ' + this.pc_.signalingState);
+      }
       if (this.onsignalingstatechange) { this.onsignalingstatechange({peerId: this.peerId, signalingState: this.pc_.signalingState}); }
     }
   }.bind(this);
   this.pc_.oniceconnectionstatechange = function() {
     if (this.pc_) {
-      console.log('ICE connection state changed to: ' + this.pc_.iceConnectionState);
+      if(this.log_level >= 2) {
+        console.log('[pc]: ICE connection state changed to: ' + this.pc_.iceConnectionState);
+      }
       if (this.pc_.iceConnectionState === 'completed') {
-        console.log('ICE complete time: ' + (Date.now() - this.startTime_).toFixed(0) + 'ms.');
+        if(this.log_level >= 2) {
+          console.log('[pc]: ICE complete time: ' + (Date.now() - this.startTime_).toFixed(0) + 'ms.');
+        }
       }
       if (this.oniceconnectionstatechange) {  this.oniceconnectionstatechange({peerId: this.peerId, iceConnectionState: this.pc_.iceConnectionState}); }
     }
@@ -308,6 +350,9 @@ PeerConnection.prototype.sendDataChannelMessage = function(message) {
     if(this.cryptoClient_) {
       message = this.cryptoClient_.encrypt(message);
     }
+    if(this.log_level >= 3) {
+      console.log('[pc]: sending message to ' + this.peerId + ' :: ' + message);
+    }
     this.dataChannel_.send(message);
     return true;
   } else {
@@ -319,6 +364,9 @@ PeerConnection.prototype.receiveDataChannelMessage = function(event) {
   var message = event.data;
   if(this.cryptoClient_) {
     message = this.cryptoClient_.decrypt(message);
+  }
+  if(this.log_level >= 3) {
+    console.log('[pc]: received message from ' + this.peerId + ' :: ' + message);
   }
   if(this.ondatachannelmessage) {
     this.ondatachannelmessage(message);

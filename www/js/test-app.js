@@ -22,7 +22,8 @@ var TestApp = function(loadingParams) {
   
   this.loadingParams_ = loadingParams;
   
-  this.channel_ = new WebchatSignalChannel();
+  console.log("[app]: Client Id = "+this.loadingParams_.clientId);
+  this.channel_ = new WebchatSignalChannel(this.loadingParams_.clientId);
   this.wcService = new WebchatService(loadingParams, this.channel_);
   
   this.wcService.onError_ = this.displayError_.bind(this);
@@ -41,7 +42,7 @@ var TestApp = function(loadingParams) {
 
 TestApp.prototype.showLogin_ = function() {
   var roomSelectionDiv = $(UI_CONSTANTS.roomSelectionDiv);
-  this.roomSelection_ = new Login(roomSelectionDiv, this.channel_.connection);
+  this.roomSelection_ = new Login(roomSelectionDiv, this);
   this.show_(roomSelectionDiv);
 };
 

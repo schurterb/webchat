@@ -4,10 +4,12 @@
 
 /* exported WebchatService */
 
-var WebchatService = function(params, channel) {
+var WebchatService = function(params, channel, log_level=0) {
   this.params_ = params;
   this.channel_ = channel;
-  this.connectedPeers_ = [];
+  this.negotiator_ = null;
+  this.log_level = log_level;
+  
   this.dataChannelMessageHandlers_ = [];
   
   this.roomLink_ = '';
@@ -26,24 +28,23 @@ var WebchatService = function(params, channel) {
   this.onLocalStreamAdded_ = null;
   
   this.onNewPeerConnection_ = function(event) {
-    console.log(" ### Received Peer Connection Event for "+event.peerId+"! ### ");
-    this.connectedPeers_[event.peerId] = event.peerConnection;
+    if(this.log_level >= 2) { console.log("[wc-service]: Received Peer Connection Event for "+event.peerId+"!"); }
   }.bind(this); 
   this.onIceConnectionStateChanged_ = function(event) {
-    //console.log(" ## ## Received ICE Connection State event :: "+JSON.stringify(event));
+    if(this.log_level >= 2) { console.log("[wc-service]: Received ICE Connection State event :: ",event); }
   }.bind(this);
   this.onSignalingStateChanged_ = function(event) {
-    //console.log(" ## ## onsignalingstatechange event :: "+JSON.stringify(event));
-  };
+    if(this.log_level >= 2) { console.log("[wc-service]: onsignalingstatechange event :: ",event); }
+  }.bind(this);
   this.onNewIceCandidate_ = function(location, candidate) {
-    //console.log(" ## ## onnewicecandidate event :: location = "+JSON.stringify(location)+", candidate = "+JSON.stringify(candidate));
-  };
+    if(this.log_level >= 2) { console.log("[wc-service]: onnewicecandidate event :: location = "+JSON.stringify(location)+", candidate = "+JSON.stringify(candidate)); }
+  }.bind(this);
 }
 
 WebchatService.prototype.start = function(roomId, roomPassword) {
   this.startTime = Date.now();
   
-  console.log(" ### Room Id = "+roomId);
+  if(this.log_level >= 2) { console.log("[wc-service]: Room Id = "+roomId); }
   this.params_.roomId = roomId;
   this.negotiator_ = new Negotiator(this.params_, this.channel_);
 
@@ -51,8 +52,9 @@ WebchatService.prototype.start = function(roomId, roomPassword) {
     var roomErrors = this.params_.errorMessages;
     if (roomErrors && roomErrors.length > 0) {
       for (var i = 0; i < roomErrors.length; ++i) {
-        console.log("Room Error: "+roomErrors[i]);
+        if(this.log_level >= 1) { console.log("[wc-service][error]: Room Error: "+roomErrors[i]); }
       }
+      if(this.log_level >= 1) { console.log("[wc-service][error]: Room error detected: ",roomErrors); }
       return;
     }
   }
@@ -61,7 +63,7 @@ WebchatService.prototype.start = function(roomId, roomPassword) {
     var roomWarnings = this.params_.warningMessages;
     if (roomWarnings && roomWarnings.length > 0) {
       for (var j = 0; j < roomWarnings.length; ++j) {
-        console.log("Room Warning: "+roomWarnings[i]);
+        if(this.log_level >= 1) { console.log("[wc-service][warn]: Room Warning: "+roomWarnings[i]); }
       }
     }
   }
@@ -90,16 +92,24 @@ WebchatService.prototype.start = function(roomId, roomPassword) {
 // Sends a message to the specified peers, if connected.
 // If no peers are specified, then it sends the message to all peers.
 WebchatService.prototype.sendDataChannelMessage = function(message, peers = []) {
-  if( !peers || (peers.length == 0)) {
-    peers = Object.keys(this.connectedPeers_);
-  }
-  
-  for(let i=0; i<peers.length; i++) {
-    try {
-      this.connectedPeers_[peers[i]].sendDataChannelMessage(message);
-    } catch(e) {
-      console.log("Error sending outgoing data channel message.");
-      console.log(e);
+  if(this.negotiator_) {
+    if( !peers || (peers.length == 0)) {
+      peers = this.negotiator_.listPeers();
+    }
+    
+    for(let i=0; i<peers.length; i++) {
+      try {
+        this.negotiator_.getPeerConnection(peers[i]).sendDataChannelMessage(message);
+      } catch(e) {
+        if(this.log_level >= 1) { 
+          console.log("[wc-service][error]: Error sending outgoing data channel message.");
+          console.log(e);
+        }
+      }
+    }
+  } else {
+    if(this.log_level >= 1) { 
+      console.log("[wc-service][warn]: Negotiator has not been initialized.  Cannot send message as no peers are connected.");
     }
   }
 }
@@ -117,8 +127,10 @@ WebchatService.prototype.onDataChannelMessage_ = function( message ) {
     try {
       this.dataChannelMessageHandlers_[i](message);
     } catch(e) {
-      console.log("Error processing incoming data channel message.");
-      console.log(e);
+      if(this.log_level >= 1) { 
+        console.log("[wc-service][error]: Error processing incoming data channel message.");
+        console.log(e);
+      }
     }
   }
 }
@@ -145,21 +157,21 @@ WebchatService.prototype.loadUrlParams_ = function() {
 };
 
 WebchatService.prototype.hangup = function(boolean_flag) {
-  console.log("webchat-service - TODO: Implement hangup");
+  if(this.log_level >= 3) { console.log("[wc-service] :: TODO: Implement hangup"); }
 };
 
 WebchatService.prototype.onRemoteHangup = function() {
-  console.log("webchat-service - TODO: Implement onRemoteHangup");
+  if(this.log_level >= 3) { console.log("[wc-service] :: TODO: Implement onRemoteHangup"); }
 };
 
 WebchatService.prototype.restart = function() {
-  console.log("webchat-service - TODO: Implement restart");
+  if(this.log_level >= 3) { console.log("[wc-service] :: TODO: Implement restart"); }
 };
 
 WebchatService.prototype.toggleAudioMute = function() {
-  console.log("webchat-service - TODO: Implement toggleAudioMute");
+  if(this.log_level >= 3) { console.log("[wc-service] :: TODO: Implement toggleAudioMute"); }
 };
 
 WebchatService.prototype.toggleVideoMute = function() {
-  console.log("webchat-service - TODO: Implement toggleVideoMute");
+  if(this.log_level >= 3) { console.log("[wc-service] :: TODO: Implement toggleVideoMute"); }
 };

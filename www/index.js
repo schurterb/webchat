@@ -5,7 +5,7 @@ window.onload=start;
 var webchat;
 
 var loadingParams = {
-  clientId: webchatTools.randomString(8),
+  clientId: webchatTools.randomString(16),
   isLoopback: false,
   mediaConstraints: {"video": true, "audio": true},
   offerOptions: {},
@@ -14,10 +14,7 @@ var loadingParams = {
 };
 
 function start() {
-    console.log("Logging in as unauth user.");
-    webchatServerless.initialize();
-    
-    console.log("Initializing serverless webchat system.");
+    console.log("Initializing webchat system.");
     initialize();
 }
 
