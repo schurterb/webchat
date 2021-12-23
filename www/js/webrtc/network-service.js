@@ -27,11 +27,20 @@ var WebchatService = function(params, channel, log_level=0) {
   this.onRemoteStreamAdded_ = null;
   this.onLocalStreamAdded_ = null;
   
+  this.onNewConnection = null;
+  this.onConnectionChange = null;
+  
   this.onNewPeerConnection_ = function(event) {
     if(this.log_level >= 2) { console.log("[wc-service]: Received Peer Connection Event for "+event.peerId+"!"); }
+    if(this.onNewConnection) {
+      this.onNewConnection(event);
+    }
   }.bind(this); 
   this.onIceConnectionStateChanged_ = function(event) {
     if(this.log_level >= 2) { console.log("[wc-service]: Received ICE Connection State event :: ",event); }
+    if(this.onConnectionChange) {
+      this.onConnectionChange(event);
+    }
   }.bind(this);
   this.onSignalingStateChanged_ = function(event) {
     if(this.log_level >= 2) { console.log("[wc-service]: onsignalingstatechange event :: ",event); }

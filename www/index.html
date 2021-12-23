@@ -13,37 +13,35 @@
     <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./css/main.css">
     
-    <script src="./js/aws-sdk.min.js"></script>
-    <script src="./js/webrtc.min.js"></script>
-    <script src="./js/crypto-js.min.js"></script>
+    <!-- external libraries -->
+    <script src="./js/lib/webrtc.min.js"></script>
+    <script src="./js/lib/crypto-js.min.js"></script>
     
-    <script src="./js/webchat-service.js"></script>
-    <script src="./js/webchat-negotiator.js"></script>
-    <script src="./js/webchat-peer-connection.js"></script>
+    <!-- p2p networking -->
+    <script src="./js/webrtc/network-service.js"></script>
+    <script src="./js/webrtc/negotiator.js"></script>
+    <script src="./js/webrtc/peer-connection.js"></script>
+    <script src="./js/webrtc/signal-channel.js"></script>
+    <script src="./js/webrtc/signal-connection.js"></script>
+    <script src="./js/webrtc/wc-tools.js"></script>
     
-    <script src="./js/webchat-crypto.js"></script>
+    <!-- utilities -->
+    <script src="./js/util/crypto.js"></script>
+    <script src="./js/util/pinger.js"></script>
+    
+    <!-- testing -->
     <script src="./js/webchat-constants.js"></script>
-    <script src="./js/webchat-tools.js"></script>
-    <!--<script src="./js/webchat-serverless.js"></script>-->
-    <!--<script src="./js/webchat-serverless-channel.js"></script>-->
-    
-    <script src="./js/webchat-pinger.js"></script>
     <script src="./js/test-app.js"></script>
     <script src="./js/test-login.js"></script>
     
+    <!-- main -->
     <script src="./index.js"></script>
     
-    <!---->
-    <script src="./js/wc-signal-connection.js"></script>
-    <script src="./js/wc-signal-channel.js"></script>
-    <script src="./js/webchat-negotiator.js"></script>
-    <!---->
-
   </head>
   
   <body>
     
-    <div id="room-selection" class="central-item hidden">
+    <div id="room-selection" class="central-item">
       <h1>Serverless WebChat</h1>
       <p id="instructions">Please enter a room name and key</p>
       <div>
@@ -56,13 +54,13 @@
             </tr>
             <tr>
               <td>Room Key: </td>
-              <td><input type="text" id="room-password-input" autofocus/></td>
+              <td><input type="text" id="room-key-input" autofocus/></td>
               <td><label class="error-label hidden" id="room-password-input-label">Password must be 8 or more characters and include only letters, numbers, underscore and hyphen.</label></td>
             </tr>
           </table>
         </div>
         <div id="room-id-input-buttons">
-          <button id="join-button">JOIN</button>
+          <button id="join-button" onclick="javascript:joinRoom()">JOIN</button>
         </div>
       </div>
     </div>

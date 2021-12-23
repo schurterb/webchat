@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+    <meta itemprop="name" content="WebChat">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta id="theme-color" name="theme-color" content="#1e1e1e">
+  
+    <title>WebChat</title>
+  
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/main.css">
+    
+    <!-- external libraries -->
+    <script src="./js/lib/webrtc.min.js"></script>
+    <script src="./js/lib/crypto-js.min.js"></script>
+    
+    <!-- p2p networking -->
+    <script src="./js/webrtc/network-service.js"></script>
+    <script src="./js/webrtc/negotiator.js"></script>
+    <script src="./js/webrtc/peer-connection.js"></script>
+    <script src="./js/webrtc/signal-channel.js"></script>
+    <script src="./js/webrtc/signal-connection.js"></script>
+    <script src="./js/webrtc/wc-tools.js"></script>
+    
+    <!-- utilities -->
+    <script src="./js/util/crypto.js"></script>
+    <script src="./js/util/pinger.js"></script>
+    
+    <!-- testing -->
+    <script src="./js/webrtc-test.js"></script>
+    
+    <!-- main -->
+    
+  </head>
+  
+  <body>
+    
+    <div id="webrtc-test-main" class="central-item-l">
+      <div id="title-element">
+        <h1>WebRTC Test</h1>
+      </div>
+      <table id="webrtc-connection-table" class="custom-table">
+        <tr id="column-titles" class="headings">
+          <th id="peer-column-title" class="column-title no-link">Peer Id</th>
+          <th id="status-column-title" class="column-title no-link">Status</th>
+          <th id="data-column-title" class="column-title no-link">Data</th>
+          <th id="audio-column-title" class="column-title no-link">Audio</th>
+          <th id="voice-column-title" class="column-title no-link">Voice</th>
+          <th id="latency-column-title" class="column-title no-link">Latency</th>
+          <th id="actions-column-title" class="column-title no-link last">Actions</th>
+        </tr>
+      </table>
+    </div>
+    
+  </body>
+</html>

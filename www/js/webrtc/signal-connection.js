@@ -1,22 +1,20 @@
 
+/* globals webchatTools */
 /* exported SignalServerConnector */
 
 'use strict';
 
-var SignalServerConnector = function(clientId, log_level=0) {
+var SignalServerConnector = function(clientId, log_level=1) {
   this.client_id = clientId;
   this.log_level = log_level
-  this.server_url = "wss://52.202.87.135/signalling";
+  this.server_data = webchatTools.getSignalingServer();
   this.onerror = null;
   this.message_handler = null;
-  
   this.registered_ = false;
-  this.connection_id = null;
 };
 
 SignalServerConnector.prototype.connect = function() {
-  this.socket = new WebSocket(this.server_url);
-
+  this.socket = new WebSocket(this.server_data.url);
   this.socket.onopen = function(e) {
     if(this.log_level >= 2) { console.log(`[ws][open]: Connecting to ${this.server_url} as ${this.client_id}`); }
     this.socket.send(JSON.stringify({"type": "register", "client_id": this.client_id}));
@@ -89,6 +87,7 @@ SignalServerConnector.prototype.disconnect = function() {
 SignalServerConnector.prototype.joinRoom = function( room_id, room_key ) {
   this.room_id = room_id;
   this.room_key = room_key;
+  //TODO: close current connections and open new ones
 };
 
 SignalServerConnector.prototype.send = function(message) {
