@@ -4,13 +4,11 @@
 
 'use strict';
 
-var WebchatSignalChannel = function(clientId, log_level=0) {
+var WebchatSignalChannel = function(clientId, log_level=1) {
   this.clientId_ = clientId;
   this.log_level = log_level
   if (!this.clientId_) {
-    if(this.log_level >= 1) { 
-      console.log('[ws-channel][error]: missing clientId.');
-    }
+    if(this.log_level >= 1) { console.log('[ws-channel][error]: missing clientId.'); }
     return;
   }
 
@@ -19,12 +17,11 @@ var WebchatSignalChannel = function(clientId, log_level=0) {
   this.start_time = null;
   this.registered_ = false;
   
-  this.connection = null;
   this.keep_alive = null;
   this.keep_alive_interval = 15000; // 15 seconds
   this.server_latency = 0;
   
-  this.connection = new SignalServerConnector(this.clientId_);
+  this.connection = new SignalServerConnector(this.clientId_, this.log_level);
 
   this.connection.message_handler = function( message ) {
     if (message.type == 'keep_alive') {
@@ -40,27 +37,19 @@ var WebchatSignalChannel = function(clientId, log_level=0) {
 
 WebchatSignalChannel.prototype.open = function() {
   if ( !this.registered_ || this.clientId_ ) {
-    if(this.log_level >= 2) { 
-      console.log('[ws-channel]: Opening signaling channel.');
-    }
+    if(this.log_level >= 2) { console.log('[ws-channel]: Opening signaling channel.'); }
     this.start_time = (new Date()).getTime();
     this.register();
   } else if (this.registered_) {
-    if(this.log_level >= 1) { 
-      console.log('[ws-channel][error]: WebchatSignalChannel has already opened.');
-    }
+    if(this.log_level >= 1) { console.log('[ws-channel][error]: WebchatSignalChannel has already opened.'); }
   } else {
-    if(this.log_level >= 1) { 
-      console.log('[ws-channel][error]: missing clientId.');
-    }
+    if(this.log_level >= 1) { console.log('[ws-channel][error]: missing clientId.'); }
   }
 };
 
 WebchatSignalChannel.prototype.register = function() {
   if (this.registered_) {
-    if(this.log_level >= 1) { 
-      console.log('[ws-channel][error]: WebchatSignalChannel has already registered.');
-    }
+    if(this.log_level >= 1) { console.log('[ws-channel][error]: WebchatSignalChannel has already registered.'); }
     return;
   }
   this.connection.connect();
@@ -68,18 +57,14 @@ WebchatSignalChannel.prototype.register = function() {
   this.keep_alive = setInterval( function() {
     this.connection.send({type: "keep_alive", timestamp: (new Date()).getTime()})
   }.bind(this), this.keep_alive_interval, this.keep_alive_interval);
-  if(this.log_level >= 2) { 
-    console.log('[ws-channel]: Signaling channel registered.');
-  }
+  if(this.log_level >= 2) { console.log('[ws-channel]: Signaling channel registered.'); }
 };
 
 WebchatSignalChannel.prototype.close = async function(async) {
   this.connection.disconnect();
   this.registered_ = false;
   clearInterval(this.keep_alive);
-  if(this.log_level >= 2) { 
-    console.log('[ws-channel]: Signaling channel registered.');
-  }
+  if(this.log_level >= 2) { console.log('[ws-channel]: Signaling channel registered.'); }
 };
 
 WebchatSignalChannel.prototype.send = function(message, peerId) {
@@ -91,8 +76,6 @@ WebchatSignalChannel.prototype.send = function(message, peerId) {
     };
     this.connection.send(data);
   } else {
-    if(this.log_level >= 1) { 
-      console.log('[ws-channel][error]: WebchatSignalChannel not registered.');
-    }
+    if(this.log_level >= 1) { console.log('[ws-channel][error]: WebchatSignalChannel not registered.'); }
   }
 };

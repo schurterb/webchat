@@ -14,6 +14,11 @@ var webchatTools = {
     return window.location.href;
   },
   
+  getSignalingServer: function() {
+    // selected_servers.push(webchatTools.sig_servers[0]);
+    return webchatTools.sig_servers[Math.floor(Math.random() * webchatTools.sig_servers.length)];
+  },
+  
   initPcConfig: function() {
     var iceServers = webchatTools.getIceServers();
     var pc_config = {
@@ -27,14 +32,8 @@ var webchatTools = {
   
   getIceServers: function(number_of_servers = 2) {
       var selected_servers = [];
-      // TODO: Find way to randomly select the ice servers that doesn't break the system.
-      // for(var i=0; i<number_of_servers; i++) {
-      //   selected_servers.push(webchatTools.ice_servers[i]);
-      // }
-      
       selected_servers.push(webchatTools.turn_servers[0]);
-      selected_servers.push(webchatTools.stun_servers[0]);
-      
+      selected_servers.push(webchatTools.stun_servers[Math.floor(Math.random() * webchatTools.stun_servers.length)]);
       return selected_servers
   },
     
@@ -69,16 +68,12 @@ var webchatTools = {
       urls: 'turn:52.202.87.135',
       credential: 'qwerty42',
       username: 'webchat'
-    },
+    }
+  ],
+  
+  sig_servers: [
     {
-    	urls: 'turn:numb.viagenie.ca?transport=tcp',
-    	credential: 'mYd8W57Douu61CE',
-    	username: 'bnschurter@hotmail.com'
-    },
-    {
-    	urls: 'turn:numb.viagenie.ca?transport=tcp',
-    	credential: 'muazkh',
-    	username: 'webrtc@live.com'
+      url: 'wss://52.202.87.135/signalling'
     }
   ]
 }

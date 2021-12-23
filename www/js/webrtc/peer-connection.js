@@ -11,7 +11,7 @@
 
 'use strict';
 
-var PeerConnection = function(id, params, log_level=0) {
+var PeerConnection = function(id, params, log_level=1) {
   this.peerId = id;
   this.params_ = params;
   this.log_level=log_level;
@@ -371,4 +371,8 @@ PeerConnection.prototype.receiveDataChannelMessage = function(event) {
   if(this.ondatachannelmessage) {
     this.ondatachannelmessage(message);
   }
+}
+
+PeerConnection.prototype.restartIce = function() {
+  this.pc_.restartIce();
 }

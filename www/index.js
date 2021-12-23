@@ -1,16 +1,15 @@
-window.onload=start;
 
-/* global webchatTools, webchatServerless, TestApp */
+/* globals webchatTools */
 
-var webchat;
+'use strict';
 
-var loadingParams = {
-  clientId: webchatTools.randomString(16),
-  isLoopback: false,
-  mediaConstraints: {"video": true, "audio": true},
-  offerOptions: {},
-  peerConnectionConfig: webchatTools.initPcConfig(),
-  peerConnectionConstraints: {"optional": []}
+window.onload = start;
+
+function joinRoom() {
+  var clientId = webchatTools.randomString(16);
+  var roomId = document.getElementById('room-id-input').value.trim();
+  var roomKey = document.getElementById('room-key-input').value.trim();
+  window.location = "./webrtc-test.html?clientId="+clientId+"&room="+roomId+"&key="+roomKey;
 };
 
 function start() {
@@ -24,7 +23,11 @@ function initialize() {
     document.addEventListener('visibilitychange', onVisibilityChange);
     return;
   }
-  webchat = new TestApp(loadingParams);
+
+  let roomIdInput = document.getElementById('room-id-input');
+  let roomKeyInput = document.getElementById('room-key-input');
+  roomIdInput.value = webchatTools.randomString(8);
+  roomKeyInput.value = webchatTools.randomString(4, 'a')+webchatTools.randomString(4, 'A')+webchatTools.randomString(2, '#');
 }
 
 function onVisibilityChange() {
