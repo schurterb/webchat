@@ -30,11 +30,11 @@ function initialize() {
   
   if( (roomId == null) || (roomKey == null)) {
     console.log("No room or key provided.  Cannot run test.");
-    document.getElementById('title-element').innerHTML = "<h1>WebRTC Test :: error</h1><p>No room or key provided.  Cannot run test.</p>"
+    document.getElementById('title-element').innerHTML = "<h1>MeshNet Test :: error</h1><p>No room or key provided.  Cannot run test.</p>"
     return;
   }
   
-  document.getElementById('title-element').innerHTML = "<h1>WebRTC Test :: "+clientId+"</h1>"
+  document.getElementById('title-element').innerHTML = "<h1>MeshNet Test :: "+clientId+"</h1>"
   
   console.log("Initializing webrtc test app");
   app = new WebRTCTestApp({

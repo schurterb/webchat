@@ -269,6 +269,7 @@ Negotiator.prototype.listPeerIds = function() {
 }
 
 Negotiator.prototype.onUserMediaSuccess_ = function( stream ) {
+  console.log("[negotiator][media]: stream received", stream);
   if(this.log_level >= 2) { console.log("[negotiator][media]: stream received"); }
 }
 Negotiator.prototype.onUserMediaError_ = function( error ) {

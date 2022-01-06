@@ -7,7 +7,7 @@
 var WebchatService = function(params, channel, log_level=0) {
   this.params_ = params;
   this.channel_ = channel;
-  this.negotiator_ = null;
+  this.negotiator_ = new Negotiator(this.params_, this.channel_);
   this.log_level = log_level;
   
   this.dataChannelMessageHandlers_ = [];
@@ -52,10 +52,8 @@ var WebchatService = function(params, channel, log_level=0) {
 
 WebchatService.prototype.start = function(roomId, roomPassword) {
   this.startTime = Date.now();
-  
   if(this.log_level >= 2) { console.log("[wc-service]: Room Id = "+roomId); }
   this.params_.roomId = roomId;
-  this.negotiator_ = new Negotiator(this.params_, this.channel_);
 
   if(this.params_.errorMessages) {
     var roomErrors = this.params_.errorMessages;
@@ -92,10 +90,6 @@ WebchatService.prototype.start = function(roomId, roomPassword) {
   this.negotiator_.onnewicecandidate = this.onNewIceCandidate_;
   
   this.negotiator_.start(this.params_.roomId);
-  
-  //TODO: Add logic to process data channel messages from peers.
-  
-  //TODO: Add logic to handler new peers.
 };
 
 // Sends a message to the specified peers, if connected.
