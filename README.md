@@ -1,7 +1,7 @@
 # Basic Client-Only Web Chat
 
 ### Concept
-
+An experiment to learn WebRTC and create a chat system that does not use a server even for peer discovery and connection negotiation.
 
 ### Components
 
@@ -11,8 +11,3 @@ negotiator.js - reads and writes files in a subdirectory of an s3 bucket.
                 person can only create and delete one particularly named file.
                 
 connector.js - creates peer-to-peer connections
-
-### TODO - for optimization
-
-[] - If connection fails, change stun & turn servers before trying to reconnect
-   + - on retries, alternate who is initiator, as VPNs can make connecting wonky
